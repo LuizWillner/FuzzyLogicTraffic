@@ -1,6 +1,6 @@
-# CaroninhasBackES2
+# FuzzyTraffic
 
-Projeto da disciplina Engenharia de Software 2 | Back-end | Universidade Federal Fluminense | 2020.2
+Projeto da disciplina Lógica Nebulosa | Universidade Federal Fluminense | 2025.1
 
 ## Configurando ambiente de desenvolvimento
 1. Baixar e instalar **Python 3.10**
