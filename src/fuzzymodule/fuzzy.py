@@ -33,20 +33,20 @@ aberto['Aberto']= fuzz.trimf(aberto.universe, [45,60,75])
 aberto['Mais Aberto'] = fuzz.trapmf(aberto.universe, [60,75,100,100])
 
 # Maquina de Inferência 
-ruleMA  = ctrl.Rule(
+rule_MaisAberto  = ctrl.Rule(
         (pessoa['muito baixo'] & (veiculo['medio'] | veiculo['alto'] | veiculo['muito alto'])) | 
         (pessoa['baixo'] & (veiculo['alto'] | veiculo['muito alto'])) | 
         (pessoa['medio'] & veiculo['muito alto']), 
     aberto['Mais Aberto']
 )
-ruleA = ctrl.Rule(
+rule_Aberto = ctrl.Rule(
         (pessoa['muito baixo'] & veiculo['baixo']) | 
         (pessoa['baixo'] & veiculo['medio']) | 
         (pessoa['medio'] & veiculo['alto']) | 
         (pessoa['alto'] & veiculo['muito alto']), 
     aberto['Aberto']
 )
-ruleE  = ctrl.Rule (
+rule_Equilibrado  = ctrl.Rule (
         (veiculo ['muito baixo'] & pessoa ['muito baixo']) | 
         (veiculo ['muito baixo'] & pessoa ['baixo']) | 
         (veiculo ['baixo'] & pessoa ['baixo']) | 
@@ -58,16 +58,23 @@ ruleE  = ctrl.Rule (
         (veiculo ['muito alto'] & pessoa ['muito alto']), 
     aberto['Equilibrado']
 )
-ruleF = ctrl.Rule(
+rule_Fechado = ctrl.Rule(
         (pessoa['medio'] & veiculo['muito baixo']) |
         (pessoa['alto'] & veiculo['baixo']) |
         (pessoa['muito alto'] & veiculo['medio']), 
     aberto['Fechado']
 )
-ruleMF  = ctrl.Rule(
+rule_MaisFechado  = ctrl.Rule(
         ((pessoa['alto'] | pessoa['muito alto'])& veiculo['muito baixo']) | 
         (pessoa['muito alto'] & veiculo['baixo']), 
     aberto['Mais Fechado']
 )
-aberto_ctrl = ctrl.ControlSystem([ruleMA, ruleA, ruleE, ruleF, ruleMF])
-aberto_simulator = ctrl.ControlSystemSimulation(aberto_ctrl)
+aberto_ctrl = ctrl.ControlSystem(
+    [
+        rule_MaisAberto, 
+        rule_Aberto, 
+        rule_Equilibrado, 
+        rule_Fechado, 
+        rule_MaisFechado
+    ]
+)
