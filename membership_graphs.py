@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
-from src.utils.graphs import generate_membership_graphs, generate_simulation_graphs
+from src.utils.graphs import generate_membership_graphs, generate_simulation_graphs, generate_rules_heatmap
 from src.fuzzymodule.fuzzy import aberto
 from src.utils.generalparams import OUTPUT_PATH
 
 
 MEMBERSHIP_GRAPHS_PATH = OUTPUT_PATH + 'membership_graphs/'
+BASE_RULES_HEATMAP_PATH = OUTPUT_PATH + 'base_rules_heatmap/'
 
 if __name__ == "__main__":
     generate_membership_graphs(output_save_path=MEMBERSHIP_GRAPHS_PATH)
@@ -17,3 +18,5 @@ if __name__ == "__main__":
     #     'total_time': 1020.06
     # }
     # generate_simulation_graphs(sim_time_series, output_save_path=OUTPUT_PATH+'sim_graphs/')
+    
+    generate_rules_heatmap(output_save_path=BASE_RULES_HEATMAP_PATH)
