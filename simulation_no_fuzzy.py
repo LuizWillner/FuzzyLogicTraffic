@@ -40,8 +40,8 @@ car_limit = sim_params["car_limit_road"]  # Limite de carros gerados na road
 n_people = 0 #Numero de pessoas querendo atravessar
 end = False #Controle do termino da simulação
 fechou = False #Controle do sinal
-closed_time = 20 #Tempo que deverá ficar fechado
-opened_time = 20 #Tempo que deverá ficar aberto
+closed_time = sim_params["no_fuzzy"]["closed_time"] #Tempo que deverá ficar fechado
+opened_time = sim_params["no_fuzzy"]["opened_time"] #Tempo que deverá ficar aberto
 time_limit = sim_params["simulation_time_limit"]  # Tempo limite da simulação
 
 while(not(end)):

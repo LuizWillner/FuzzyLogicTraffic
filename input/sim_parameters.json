@@ -11,5 +11,9 @@
     "pedestrians": {
         "upper_limit": 50,
         "dynamic_upper_limit": false
+    },
+    "no_fuzzy": {
+        "opened_time": 50,
+        "closed_time": 50
     }
 }
