@@ -1,5 +1,5 @@
 from src.model.Road import Road
-from src.utils.simparams import (
+from utils.simconfig import (
     width, height, screen, inputs, 
     backgroud_color, time_text_color, signal_closed_text_color, signal_open_text_color, vehicle_people_text_color,
     sinal_aberto, sinal_fechado
@@ -10,6 +10,7 @@ current_time = 0
 n_roads = 5 #Numero de rodovias
 road = Road(n_roads, width) #Chamada da classe rodovias
 signal = True #Estado do sinal
+traffic_intensity = 1.0  # Intensidade do tráfego
 n_people = 0 #Numero de pessoas querendo atravessar
 end = False #Controle do termino da simulação
 fechou = False #Controle do sinal
@@ -35,7 +36,7 @@ while(not(end)):
         current_time = 0
 
     for i in range(n_roads):
-        road.add_car(i)
+        road.add_car(i, traffic_intensity)
 
     screen.draw_text(f"Tempo atual: {current_time:.2f}s",10,10, 24, time_text_color)
     screen.draw_text(f"Duração do sinal aberto: {opened_time:.2f} |",10,34, 24, signal_open_text_color)

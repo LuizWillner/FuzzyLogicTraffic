@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datetime
 from src.fuzzymodule.fuzzy import pessoa, veiculo, aberto, fuzzy_decision_rules
-from src.utils.generalparams import PessoaState, VeiculoState, SemaforoAbertoState
+from utils.generalconfig import PessoaState, VeiculoState, SemaforoAbertoState
 
 
 BLUE = '#3383BA'
@@ -79,7 +79,6 @@ def generate_simulation_graphs(sim_time_series: dict, output_save_path=None):
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    
     if output_save_path:
         save_graph(dir_path, 'sim_cars_people.png')
     else:
@@ -95,7 +94,6 @@ def generate_simulation_graphs(sim_time_series: dict, output_save_path=None):
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    
     if output_save_path:
         save_graph(dir_path, 'sim_opened_time.png')
     else:
@@ -113,9 +111,23 @@ def generate_simulation_graphs(sim_time_series: dict, output_save_path=None):
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    
     if output_save_path:
         save_graph(dir_path, 'sim_full_aggregate.png')
+    else:
+        # Exibe o gráfico
+        plt.show()
+        
+    # Gráfico de série temporal do tempo com a intensidade de tráfego
+    plt.figure(figsize=(10, 6))
+    plt.plot(sim_time_series['time_x'], sim_time_series['traffic_intensity_y'], label='Intensidade de tráfego', marker='o', color='purple')
+    plt.xlabel('Tempo (s)')
+    plt.ylabel('Intensidade de tráfego')
+    plt.title(f'Simulação ({total_time:.1f}s) - Intensidade de Tráfego pelo Tempo')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    if output_save_path:
+        save_graph(dir_path, 'sim_traffic_intensity.png')
     else:
         # Exibe o gráfico
         plt.show()

@@ -3,7 +3,7 @@ import matplotlib as plt
 import skfuzzy as fuzz
 import numpy as np
 from skfuzzy import control as ctrl
-from src.utils.generalparams import PessoaState, VeiculoState, SemaforoAbertoState
+from utils.generalconfig import PessoaState, VeiculoState, SemaforoAbertoState
 
 
 

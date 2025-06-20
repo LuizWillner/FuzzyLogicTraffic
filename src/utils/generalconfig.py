@@ -2,6 +2,8 @@ import enum
 
 OUTPUT_PATH = 'output/'
 
+SIMULATION_PARAMETERS_FILE_PATH= 'input/sim_parameters.json'
+
 
 class State(enum.Enum):
     @classmethod

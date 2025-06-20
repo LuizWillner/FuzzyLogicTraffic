@@ -1,0 +1,15 @@
+{
+    "n_roads": 3,
+    "simulation_time_limit": 1800,
+    "car_limit_road": 100,
+    "traffic": {
+        "intensity": 1.0,
+        "dynamic_intensity": false,
+        "intensity_upper_limit": 10.0,
+        "intensity_lower_limit": 1.0
+    },
+    "pedestrians": {
+        "upper_limit": 50,
+        "dynamic_upper_limit": false
+    }
+}

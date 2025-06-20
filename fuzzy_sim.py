@@ -1,12 +1,13 @@
 # Modelagem de semaforos inteligentes usando lógica fuzzy
 #### Para o nosso exemplo o tempo de semaforo varia de 0-100, em que 0 indica estar fechado e 100 aberto. 
 import random
+import json
 from skfuzzy import control as ctrl
 from src.model.Road import Road
-from src.utils.generalparams import OUTPUT_PATH
+from utils.generalconfig import OUTPUT_PATH, SIMULATION_PARAMETERS_FILE_PATH
 from src.utils.graphs import generate_simulation_graphs
 from src.fuzzymodule.fuzzy import aberto_ctrl
-from src.utils.simparams import (
+from utils.simconfig import (
     width, height, screen, inputs, 
     backgroud_color, time_text_color, signal_closed_text_color, signal_open_text_color, vehicle_people_text_color,
     sinal_aberto, sinal_fechado
@@ -15,15 +16,39 @@ from src.utils.simparams import (
 
 SIMULATION_GRAPH_PATH = OUTPUT_PATH + 'sim_graphs/'
 
+with open(SIMULATION_PARAMETERS_FILE_PATH, 'r') as json_file:
+    sim_params = json.load(json_file)
+
 aberto_simulator = ctrl.ControlSystemSimulation(aberto_ctrl)
 
 ### Simulação
 total_time = 0  # Tempo total da simulação
 cycle_time = 0
 phase_time = 0  # Tempo da fase do semáforo
-n_roads = 3  # Numero de rodovias
+n_roads = sim_params["n_roads"]  # Numero de rodovias
 road = Road(n_roads, width)  # Chamada da classe rodovias
 signal = True  # Estado do sinal
+
+traffic_intensity: float = sim_params["traffic"]["intensity"] # Intensidade do tráfego
+traffic_intensity_upper_limit: float = sim_params["traffic"]["intensity_upper_limit"] # Limitante superior da intensidade do tráfego
+traffic_intensity_lower_limit: float = sim_params["traffic"]["intensity_lower_limit"]  # Limitante inferior da intensidade do tráfego
+# 0.0001; 0.0005; 0.001
+traffic_intensity = traffic_intensity/10000
+traffic_intensity_upper_limit = traffic_intensity_upper_limit/10000
+traffic_intensity_lower_limit = traffic_intensity_lower_limit/10000
+
+dynamic_traffic_intensity: bool = sim_params["traffic"]["dynamic_intensity"] # Se True, a intensidade do tráfego varia dinamicamente
+if dynamic_traffic_intensity and not traffic_intensity:
+    # Intensidade do tráfego dinâmica
+    traffic_intensity = random.uniform(traffic_intensity_lower_limit, traffic_intensity_upper_limit)  
+
+# inteiro que varia de 0 a 50
+people_upper_limit: int = sim_params["pedestrians"]["upper_limit"] # Limitante superior de pessoas geradas aleatoriamente
+dynamic_people_upper_limit: bool = sim_params["pedestrians"]["dynamic_upper_limit"]  # Se True, o limitante superior de pessoas varia dinamicamente
+if dynamic_people_upper_limit:
+    people_upper_limit = random.randint(0, 50)  # Intensidade de pessoas dinâmica
+    
+car_limit = sim_params["car_limit_road"]  # Limite de carros gerados na road
 n_people = 0  # Numero de pessoas querendo atravessar
 end = False  # Controle do termino da simulação
 fechou = False  # Controle do sinal
@@ -34,15 +59,18 @@ sim_time_series = {
     'opened_time_y': [],
     'cars_y': [],
     'people_y': [],
+    'traffic_intensity_y': [],
     'total_time': 0
 }
-time_limit = 3600  # Tempo limite da simulação em segundos
+time_limit = sim_params["simulation_time_limit"]  # Tempo limite da simulação em segundos
 # 3600 segundos = 1 hora
 # 2700 segundos = 45 minutos
 # 1800 segundos = 30 minutos
 # 900 segundos = 15 minutos
+# 600 segundos = 10 minutos
 # 300 segundos = 5 minutos
 
+# GameLoop
 while(not(end)):
     screen.set_background_color(backgroud_color)
     delta = screen.delta_time()
@@ -54,7 +82,7 @@ while(not(end)):
         # Input de um novo número de pessoas e veículos ao sistema fuzzy
         aberto_simulator.input['pessoas'] = n_people  # Enviando o número de pessoas que desejam atravessar para realização do calculo
         sim_time_series['people_y'].append(n_people)
-        n_people = random.randint(0,50)
+        n_people = random.randint(0, people_upper_limit)
         aberto_simulator.input['veiculos'] = road.car_frequency  # Enviando o fluxo de carros para realização do calculo
         sim_time_series['cars_y'].append(road.car_frequency)
         sim_time_series['time_x'].append(total_time)
@@ -68,6 +96,14 @@ while(not(end)):
         opened_time = float(aberto_simulator.output['tempo'])
         sim_time_series['opened_time_y'].append(opened_time)
         
+        sim_time_series['traffic_intensity_y'].append(traffic_intensity*10000)
+        
+        if dynamic_traffic_intensity:
+            traffic_intensity = random.uniform(traffic_intensity_lower_limit, traffic_intensity_upper_limit)
+            
+        if dynamic_people_upper_limit:
+            people_upper_limit = random.randint(0, 50)
+            
         cycle_time = 0
         phase_time = 0
         fechou = False
@@ -81,14 +117,14 @@ while(not(end)):
         phase_time = 0
 
     for i in range(n_roads):
-        road.add_car(i)
+        road.add_car(i, traffic_intensity, car_limit)
 
     screen.draw_text(f"Tempo total: {total_time:.2f}s",10,10, 24, time_text_color)
     screen.draw_text(f"Tempo ciclo: {cycle_time:.2f}s",260,10, 24, time_text_color)
     screen.draw_text(f"Tempo fase: {phase_time:.2f}s",510,10, 24, time_text_color)
     screen.draw_text(f"Duração do sinal aberto: {opened_time:.2f} |",10,34, 24, signal_open_text_color)
     screen.draw_text(f"Duração do sinal fechado: {closed_time:.2f} ",260,34, 24, signal_closed_text_color)
-    screen.draw_text(f"Veículos na tela: {road.n_cars} | Vazão de veículos: {road.car_frequency} | Pessoas: {n_people} | Sinal: {signal}",10,58, 24, vehicle_people_text_color)
+    screen.draw_text(f"Veículos na tela: {road.n_cars} | Vazão de veículos: {road.car_frequency} | Pessoas: {n_people} | Sinal: {signal} | Tráfego: {traffic_intensity*10000:.1f}",10,58, 24, vehicle_people_text_color)
     
     if(inputs.key_pressed('esc')) or total_time > time_limit:
         end = True
@@ -117,5 +153,6 @@ if end:
     print(f"Série temporal (tempo de semáforo aberto): {sim_time_series['opened_time_y']}")
     print(f"Série temporal (número de veículos): {sim_time_series['cars_y']}")
     print(f"Série temporal (número de pessoas): {sim_time_series['people_y']}")
+    print(f"Série temporal (intensidade de tráfego): {sim_time_series['traffic_intensity_y']}")
     generate_simulation_graphs(sim_time_series, output_save_path=SIMULATION_GRAPH_PATH)
     

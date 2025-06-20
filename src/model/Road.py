@@ -19,12 +19,14 @@ class Road():
 
         self.limit = width
     #Adicionando os carros nas rodovias
-    def add_car(self, road):
+    def add_car(self, road, prob=1.0, road_limit=100):
         if(road >= self.n_roads or (len(self.roads[f'R{road}']) != 0 and self.roads[f'R{road}'][-1].get_pos() < 0)):
             return
-        else:
-            self.n_cars += 1 #Adicionando mais 1 no numero de carros
+        elif(random.random() < prob and self.n_cars < road_limit): #Probabilidade de adicionar o carro
+            self.n_cars += 1 #Adicionando mais 1 no numero de carros  #TODO: tentar mexer aqui para diminuir fluxo de carros
             self.roads[f'R{road}'].append(Car(random.randint(1,2)))
+        else:
+            return
     #Atualizando as rodovias
     def update(self, delta_time, signal):
         for road in self.roads:
