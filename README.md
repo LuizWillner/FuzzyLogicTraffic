@@ -43,3 +43,26 @@ Projeto da disciplina Lógica Nebulosa | Universidade Federal Fluminense | 2025.
 	```shell
 	>> pip install -r requirements.txt
 	```
+
+## Simulação
+Há dois tipos de simuladores:
+- [no_fuzzy_sim.py](): Simulador sem aplicação de lógica nebulosa.
+- [fuzzy_sim.py](): Simulador com módulo nebuloso aplicado.
+
+### Input
+Os parâmetros de entrada para os dois simuladores podem ser configurados através do arquivo [input/sim_parameters.json](). Os parâmetros são descritos a seguir:
+n_roads": 3,
+simulation_time_limit": 1800,
+car_limit_road": 100,
+
+traffic:
+	"intensity": 1.0,
+	"dynamic_intensity": false,
+	"intensity_upper_limit": 10.0,
+	"intensity_lower_limit": 1.0
+
+pedestrian "upper_limit": 50 "dynamic_upper_limit": false
+
+
+	no_fuzzy >> "opened_time": 50,
+	no_fuzzy >> "closed_time": 50
