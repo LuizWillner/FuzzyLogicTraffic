@@ -4,10 +4,10 @@ import random
 import json
 from skfuzzy import control as ctrl
 from src.model.Road import Road
-from utils.generalconfig import OUTPUT_PATH, SIMULATION_PARAMETERS_FILE_PATH
+from src.utils.generalconfig import OUTPUT_PATH, SIMULATION_PARAMETERS_FILE_PATH
 from src.utils.graphs import generate_simulation_graphs
 from src.fuzzymodule.fuzzy import aberto_ctrl
-from utils.simconfig import (
+from src.utils.simconfig import (
     width, height, screen, inputs, 
     backgroud_color, time_text_color, signal_closed_text_color, signal_open_text_color, vehicle_people_text_color,
     sinal_aberto, sinal_fechado

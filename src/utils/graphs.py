@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datetime
 from src.fuzzymodule.fuzzy import pessoa, veiculo, aberto, fuzzy_decision_rules
-from utils.generalconfig import PessoaState, VeiculoState, SemaforoAbertoState
+from src.utils.generalconfig import PessoaState, VeiculoState, SemaforoAbertoState
 
 
 BLUE = '#3383BA'

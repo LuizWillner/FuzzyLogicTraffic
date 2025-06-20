@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from src.utils.graphs import generate_membership_graphs, generate_simulation_graphs, generate_rules_heatmap
 from src.fuzzymodule.fuzzy import aberto
-from utils.generalconfig import OUTPUT_PATH
+from src.utils.generalconfig import OUTPUT_PATH
 
 
 MEMBERSHIP_GRAPHS_PATH = OUTPUT_PATH + 'membership_graphs/'
