@@ -36,6 +36,12 @@ sim_time_series = {
     'people_y': [],
     'total_time': 0
 }
+time_limit = 3600  # Tempo limite da simulação em segundos
+# 3600 segundos = 1 hora
+# 2700 segundos = 45 minutos
+# 1800 segundos = 30 minutos
+# 900 segundos = 15 minutos
+# 300 segundos = 5 minutos
 
 while(not(end)):
     screen.set_background_color(backgroud_color)
@@ -84,7 +90,7 @@ while(not(end)):
     screen.draw_text(f"Duração do sinal fechado: {closed_time:.2f} ",260,34, 24, signal_closed_text_color)
     screen.draw_text(f"Veículos na tela: {road.n_cars} | Vazão de veículos: {road.car_frequency} | Pessoas: {n_people} | Sinal: {signal}",10,58, 24, vehicle_people_text_color)
     
-    if(inputs.key_pressed('esc')):
+    if(inputs.key_pressed('esc')) or total_time > time_limit:
         end = True
         sim_time_series['total_time'] = total_time
     if(inputs.key_pressed('a')):
@@ -93,8 +99,10 @@ while(not(end)):
     if (inputs.key_pressed('f')):
         signal = False
         fechou = True
+        
     road.update(screen.delta_time(), not(signal))
     road.draw()
+    
     if(signal):
         sinal_aberto.draw()
     else:
