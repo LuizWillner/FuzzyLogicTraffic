@@ -1,8 +1,102 @@
 import random
+import enum
 import matplotlib as plt
 import skfuzzy as fuzz
 import numpy as np
 from skfuzzy import control as ctrl
+
+
+class State(enum.Enum):
+    @classmethod
+    def values(cls):
+        return [state.value for state in cls]
+
+class PessoaState(State):
+    MUITO_BAIXO = 'muito baixo'
+    BAIXO = 'baixo'
+    MEDIO = 'medio'
+    ALTO = 'alto'
+    MUITO_ALTO = 'muito alto'
+    def get_var_name(cls):
+        return 'pessoas'
+ 
+class VeiculoState(State):
+    MUITO_BAIXO = 'muito baixo'
+    BAIXO = 'baixo'
+    MEDIO = 'medio'
+    ALTO = 'alto'
+    MUITO_ALTO = 'muito alto'
+    def get_var_name(cls):
+        return 'veiculos'
+
+class SemaforoAbertoState(State):
+    MAIS_FECHADO = 'Mais Fechado'
+    FECHADO = 'Fechado'
+    EQUILIBRADO = 'Equilibrado'
+    ABERTO = 'Aberto'
+    MAIS_ABERTO = 'Mais Aberto'
+    def get_var_name(cls):
+        return 'tempo'
+
+
+def fuzzy_decision_rules(veiculo: str, pessoa: str) -> str:
+    '''
+    Função que recebe a quantidade de veículos e pessoas e retorna a decisão do semáforo
+    de acordo com as regras fuzzy definidas na main. Não serve para o módulo fuzzy e a 
+    simulação em si, apenas para outros componentes do sistema que necessitem da aplicação
+    das regras (por exemplo, a geração do heatmap das regras).
+    '''
+    if (
+        (
+            pessoa == PessoaState.MUITO_BAIXO.value and 
+            veiculo in [VeiculoState.MEDIO.value, VeiculoState.ALTO.value, VeiculoState.MUITO_ALTO.value]
+        ) or
+        (
+            pessoa == PessoaState.BAIXO.value and 
+            veiculo in [VeiculoState.ALTO.value, VeiculoState.MUITO_ALTO.value]
+        ) or
+        (
+            pessoa == PessoaState.MEDIO.value and 
+            veiculo == VeiculoState.MUITO_ALTO.value
+        )
+    ):
+        return SemaforoAbertoState.MAIS_ABERTO.value
+    
+    if (
+        (pessoa == PessoaState.MUITO_BAIXO.value and veiculo == VeiculoState.BAIXO.value) or
+        (pessoa == PessoaState.BAIXO.value and veiculo == VeiculoState.MEDIO.value) or
+        (pessoa == PessoaState.MEDIO.value and veiculo == VeiculoState.ALTO.value) or
+        (pessoa == PessoaState.ALTO.value and veiculo == VeiculoState.MUITO_ALTO.value)
+    ):
+        return SemaforoAbertoState.ABERTO.value
+    
+    if (
+        (veiculo == VeiculoState.MUITO_BAIXO.value and pessoa == PessoaState.MUITO_BAIXO.value) or
+        (veiculo == VeiculoState.MUITO_BAIXO.value and pessoa == PessoaState.BAIXO.value) or
+        (veiculo == VeiculoState.BAIXO.value and pessoa == PessoaState.BAIXO.value) or
+        (veiculo == VeiculoState.BAIXO.value and pessoa == PessoaState.MEDIO.value) or
+        (veiculo == VeiculoState.MEDIO.value and pessoa == PessoaState.MEDIO.value) or
+        (veiculo == VeiculoState.MEDIO.value and pessoa == PessoaState.ALTO.value) or
+        (veiculo == VeiculoState.ALTO.value and pessoa == PessoaState.ALTO.value) or
+        (veiculo == VeiculoState.ALTO.value and pessoa == PessoaState.MUITO_ALTO.value) or
+        (veiculo == VeiculoState.MUITO_ALTO.value and pessoa == PessoaState.MUITO_ALTO.value)
+    ):
+        return SemaforoAbertoState.EQUILIBRADO.value
+    
+    if (
+        (pessoa == PessoaState.MEDIO.value and veiculo == VeiculoState.MUITO_BAIXO.value) or
+        (pessoa == PessoaState.ALTO.value and veiculo == VeiculoState.BAIXO.value) or
+        (pessoa == PessoaState.MUITO_ALTO.value and veiculo == VeiculoState.MEDIO.value)
+    ):
+        return SemaforoAbertoState.FECHADO.value
+    
+    if (
+        (pessoa in [PessoaState.ALTO.value, PessoaState.MUITO_ALTO.value] and veiculo == VeiculoState.MUITO_BAIXO.value) or
+        (pessoa == PessoaState.MUITO_ALTO.value and veiculo == VeiculoState.BAIXO.value)
+    ):
+        return SemaforoAbertoState.MAIS_FECHADO.value
+    
+    return '-'
 
 
 # Variáveis ​​Linguisticas. Termos Linguisticos 
