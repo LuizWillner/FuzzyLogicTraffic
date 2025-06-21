@@ -8,7 +8,7 @@ from src.utils.generalconfig import OUTPUT_PATH, SIMULATION_PARAMETERS_FILE_PATH
 from src.utils.graphs import generate_simulation_graphs
 from src.fuzzymodule.fuzzy import aberto_ctrl
 from src.utils.simconfig import (
-    width, height, screen, inputs, 
+    width, screen, inputs, 
     backgroud_color, time_text_color, signal_closed_text_color, signal_open_text_color, vehicle_people_text_color,
     sinal_aberto, sinal_fechado
 )
@@ -33,14 +33,17 @@ traffic_intensity: float = sim_params["traffic"]["intensity"] # Intensidade do t
 traffic_intensity_upper_limit: float = sim_params["traffic"]["intensity_upper_limit"] # Limitante superior da intensidade do tráfego
 traffic_intensity_lower_limit: float = sim_params["traffic"]["intensity_lower_limit"]  # Limitante inferior da intensidade do tráfego
 # 0.0001; 0.0005; 0.001
-traffic_intensity = traffic_intensity/10000
-traffic_intensity_upper_limit = traffic_intensity_upper_limit/10000
-traffic_intensity_lower_limit = traffic_intensity_lower_limit/10000
+linear_step: float = sim_params["traffic"]["linear_step"] # Passo linear para a intensidade do tráfego
 
 dynamic_traffic_intensity: bool = sim_params["traffic"]["dynamic_intensity"] # Se True, a intensidade do tráfego varia dinamicamente
-if dynamic_traffic_intensity and not traffic_intensity:
-    # Intensidade do tráfego dinâmica
-    traffic_intensity = random.uniform(traffic_intensity_lower_limit, traffic_intensity_upper_limit)  
+linear_intensity : bool = sim_params["traffic"]["linear_intensity"]  # Se True, a intensidade do tráfego é dinâmica e varia linearmente. Se False, a intensidade do tráfego varia aleatoriamente]
+if dynamic_traffic_intensity:
+    if linear_intensity:
+        # Intensidade do tráfego dinâmica linear
+        traffic_intensity = traffic_intensity_lower_limit  
+    else:
+        # Intensidade do tráfego dinâmica aleatória
+        traffic_intensity = random.uniform(traffic_intensity_lower_limit, traffic_intensity_upper_limit) 
 
 # inteiro que varia de 0 a 50
 people_upper_limit: int = sim_params["pedestrians"]["upper_limit"] # Limitante superior de pessoas geradas aleatoriamente
@@ -87,7 +90,6 @@ while(not(end)):
         sim_time_series['cars_y'].append(road.car_frequency)
         sim_time_series['time_x'].append(total_time)
         
-        
         # compute() executa todo o ciclo fuzzy: fuzzificação das entradas, avaliação das regras, agregação e defuzzificação, 
         # retornando o valor final da saída do seu sistema através do método output().
         aberto_simulator.compute()  # Defuzzyficação é feita pela técnica de centroide por padrão
@@ -96,10 +98,19 @@ while(not(end)):
         opened_time = float(aberto_simulator.output['tempo'])
         sim_time_series['opened_time_y'].append(opened_time)
         
-        sim_time_series['traffic_intensity_y'].append(traffic_intensity*10000)
+        sim_time_series['traffic_intensity_y'].append(traffic_intensity)
         
         if dynamic_traffic_intensity:
-            traffic_intensity = random.uniform(traffic_intensity_lower_limit, traffic_intensity_upper_limit)
+            if linear_intensity: 
+                if (
+                    traffic_intensity + linear_step > traffic_intensity_upper_limit or 
+                    traffic_intensity + linear_step < traffic_intensity_lower_limit
+                ):
+                    linear_step = -1 * linear_step
+                traffic_intensity += linear_step
+            else:
+                traffic_intensity = random.uniform(traffic_intensity_lower_limit, traffic_intensity_upper_limit)
+            print(traffic_intensity)
             
         if dynamic_people_upper_limit:
             people_upper_limit = random.randint(0, 50)
@@ -117,14 +128,14 @@ while(not(end)):
         phase_time = 0
 
     for i in range(n_roads):
-        road.add_car(i, traffic_intensity, car_limit)
+        road.add_car(i, traffic_intensity/10_000, car_limit)
 
     screen.draw_text(f"Tempo total: {total_time:.2f}s",10,10, 24, time_text_color)
     screen.draw_text(f"Tempo ciclo: {cycle_time:.2f}s",260,10, 24, time_text_color)
     screen.draw_text(f"Tempo fase: {phase_time:.2f}s",510,10, 24, time_text_color)
     screen.draw_text(f"Duração do sinal aberto: {opened_time:.2f} |",10,34, 24, signal_open_text_color)
     screen.draw_text(f"Duração do sinal fechado: {closed_time:.2f} ",260,34, 24, signal_closed_text_color)
-    screen.draw_text(f"Veículos na tela: {road.n_cars} | Vazão de veículos: {road.car_frequency} | Pessoas: {n_people} | Sinal: {signal} | Tráfego: {traffic_intensity*10000:.1f}",10,58, 24, vehicle_people_text_color)
+    screen.draw_text(f"Veículos na tela: {road.n_cars} | Vazão de veículos: {road.car_frequency} | Pessoas: {n_people} | Sinal: {signal} | Tráfego: {traffic_intensity:.1f}",10,58, 24, vehicle_people_text_color)
     
     if(inputs.key_pressed('esc')) or total_time > time_limit:
         end = True
