@@ -55,6 +55,12 @@ while(not(end)):
         current_time = 0
         fechou = False
         n_people = random.randint(0, people_upper_limit)
+        
+        if dynamic_traffic_intensity:
+            traffic_intensity = random.uniform(traffic_intensity_lower_limit, traffic_intensity_upper_limit)
+                
+        if dynamic_people_upper_limit:
+            people_upper_limit = random.randint(0, 50)
 
     if signal and current_time > opened_time:
         fechou = True
@@ -64,12 +70,6 @@ while(not(end)):
         signal = True
         fechou = False
         current_time = 0
-        
-    if dynamic_traffic_intensity:
-        traffic_intensity = random.uniform(traffic_intensity_lower_limit, traffic_intensity_upper_limit)
-            
-    if dynamic_people_upper_limit:
-        people_upper_limit = random.randint(0, 50)
 
     for i in range(n_roads):
         road.add_car(i, traffic_intensity, car_limit)
