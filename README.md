@@ -1,4 +1,4 @@
-# FuzzyTraffic
+# Fuzzy Logic Traffic Lights - Um simulador de trânsito com semáforo nebuloso
 
 Projeto da disciplina Lógica Nebulosa | Universidade Federal Fluminense | 2025.1
 
