@@ -4,7 +4,7 @@
     "car_limit_road": 100,
     "traffic": {
         "intensity": 1.0,
-        "dynamic_intensity": false,
+        "dynamic_intensity": true,
         "linear_intensity": false,
         "intensity_upper_limit": 10.0,
         "intensity_lower_limit": 1.0,
